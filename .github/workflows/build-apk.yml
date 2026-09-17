@@ -2,12 +2,14 @@ name: Build NOVA Tablet APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -16,7 +18,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
@@ -26,17 +28,16 @@ jobs:
       - name: Set up Gradle 9.6
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.6.0'
+          gradle-version: "9.6.0"
 
       - name: Unpack NOVA source
-        run: | rm -rf nova-build mkdir nova-build unzip -q NOVA_Tablet_v0.1_Source.zip -d nova-build 
+        run: | rm -rf nova-build mkdir -p nova-build unzip -q NOVA_Tablet_v0.1_Source.zip -d nova-build 
       - name: Build debug APK
         working-directory: nova-build/NOVA_Tablet_v0.1
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Rename APK
-        run: cp nova-build/NOVA_Tablet_v0.1/app/build/outputs/apk/debug/app-debug.apk NOVA-Tablet-v0.1.apk
-
+        run: | cp nova-build/NOVA_Tablet_v0.1/app/build/outputs/apk/debug/app-debug.apk NOVA-Tablet-v0.1.apk 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
